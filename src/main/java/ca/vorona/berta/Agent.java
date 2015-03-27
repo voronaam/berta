@@ -10,7 +10,7 @@ public class Agent {
     
     public static void premain(String agentArgs, Instrumentation inst) {
         // registers the transformer
-        inst.addTransformer(new TracingClassFileTransformer());
+        inst.addTransformer(new TracingClassFileTransformer(agentArgs));
     }
 
 }

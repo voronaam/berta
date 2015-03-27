@@ -20,3 +20,10 @@ repositories {
 dependencies {
     compile 'org.javassist:javassist:3.19.0-GA'
 }
+
+jar {
+    manifest {
+        attributes("Premain-Class": "ca.vorona.berta.Agent")
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
