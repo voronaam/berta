@@ -29,15 +29,13 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
         byte[] byteCode = classfileBuffer;
-        // TODO: Instrument here
-        // This code is just to test that I succeeded in java agent initialization
         String normalizedClassName = className.replaceAll("/", ".");
         if(shouldInstrument(normalizedClassName)) {
             try {
                 ClassPool cp = ClassPool.getDefault();
                 CtClass cc = cp.get(normalizedClassName);
                 for(CtMethod method: cc.getDeclaredMethods()) {
-                    method.insertBefore(String.format("System.out.println(\"Touched %s#%s\");", normalizedClassName, method.getName()));
+                    method.insertBefore(String.format("ca.vorona.berta.StaticLinker.trace(\"%s#%s\");", normalizedClassName, method.getName()));
                 }
                 byteCode = cc.toBytecode();
                 cc.detach();
