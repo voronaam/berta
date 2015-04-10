@@ -16,9 +16,12 @@ repositories {
     jcenter()
 }
 
+def nettyVersion = '5.0.0.Alpha2'
+
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile 'org.javassist:javassist:3.19.0-GA'
+    compile "io.netty:netty-handler:$nettyVersion"
 }
 
 jar {
