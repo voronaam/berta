@@ -11,6 +11,7 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.Future;
 
 public class AgentApiServer {
     
@@ -49,12 +50,22 @@ public class AgentApiServer {
     }
     
     public void stop() {
+        Future<?> f1 = null, f2 = null;
         if(workerGroup != null) {
-            workerGroup.shutdownGracefully().syncUninterruptibly();
+            f1 = workerGroup.shutdownGracefully();
         }
         if(bossGroup != null) {
-            bossGroup.shutdownGracefully().syncUninterruptibly();
+            f2 = bossGroup.shutdownGracefully();
+        }
+        try {
+            if(f1 != null) {
+                f1.sync();
+            }
+            if(f2 != null) {
+                f2.sync();
+            }
+        } catch (InterruptedException e) {
+            // Ignore the fact that graceful shutdown did not happen
         }
     }
-
 }
