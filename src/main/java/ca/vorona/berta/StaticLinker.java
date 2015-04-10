@@ -14,6 +14,10 @@ public class StaticLinker {
         StaticLinker.handler = handler;
     }
     
+    public static TraceHandler getHandler() {
+        return handler;
+    }
+    
     public static void trace(String methodDescription) {
         handler.trace(methodDescription);
     }

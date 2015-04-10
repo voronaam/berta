@@ -6,10 +6,18 @@ package ca.vorona.berta;
  *
  */
 public class PrintHandler extends TraceHandler {
-
+    
+    protected volatile String testName = "UNKNOWN TEST";
+    
     @Override
     public void trace(String methodDescription) {
-        System.out.println("Touched " + methodDescription);
+        System.out.println(testName + " touched " + methodDescription);
+    }
+
+    @Override
+    public String setTest(String name) {
+        testName = name;
+        return "--END--\n";
     }
 
 }
