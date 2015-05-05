@@ -1,5 +1,6 @@
 package ca.vorona.berta;
 
+import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -32,13 +33,18 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
         String normalizedClassName = className.replaceAll("/", ".");
         if(shouldInstrument(normalizedClassName)) {
             try {
-                ClassPool cp = ClassPool.getDefault();
-                CtClass cc = cp.get(normalizedClassName);
-                for(CtMethod method: cc.getDeclaredMethods()) {
+                ByteArrayInputStream is = new ByteArrayInputStream(classfileBuffer);
+                CtClass ctClass = null;
+                try {
+                    ctClass = ClassPool.getDefault().makeClass(is);                               
+                } finally {
+                    is.close();
+                }
+                for(CtMethod method: ctClass.getDeclaredMethods()) {
                     method.insertBefore(String.format("ca.vorona.berta.StaticLinker.trace(\"%s#%s\");", normalizedClassName, method.getName()));
                 }
-                byteCode = cc.toBytecode();
-                cc.detach();
+                byteCode = ctClass.toBytecode();
+                ctClass.detach();
             } catch (Throwable ex) {
                 // TODO: Java agent should handle errors differently
                 // ex.printStackTrace();
