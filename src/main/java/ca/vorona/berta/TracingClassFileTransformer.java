@@ -42,12 +42,8 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
                 ByteArrayInputStream is = new ByteArrayInputStream(classfileBuffer);
                 CtClass ctClass = null;
                 try {
-                    ClassPool classPool = ClassPool.getDefault();
-                    if(!seenClassLoaders.contains(loader.hashCode())) {
-                        classPool.appendClassPath(new LoaderClassPath(loader));
-                        seenClassLoaders.add(loader.hashCode());
-                    }
-                    ctClass = classPool.makeClass(is);
+                    ensureClassLoaderInClassPath(loader);
+                    ctClass = ClassPool.getDefault().makeClass(is);
                 } finally {
                     is.close();
                 }
@@ -62,6 +58,17 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
             }
         }
         return byteCode;
+    }
+
+    private void ensureClassLoaderInClassPath(ClassLoader loader) {
+        if(!seenClassLoaders.contains(loader.hashCode())) {
+            synchronized (this) {
+                if(!seenClassLoaders.contains(loader.hashCode())) {
+                    ClassPool.getDefault().appendClassPath(new LoaderClassPath(loader));
+                    seenClassLoaders.add(loader.hashCode());
+                }
+            }
+        }
     }
 
     private boolean shouldInstrument(String className) {
