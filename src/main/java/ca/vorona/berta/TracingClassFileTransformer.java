@@ -4,11 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.LoaderClassPath;
 
 /**
  * The main class transformer that instruments the classes and methods to trace their execution 
@@ -16,11 +18,15 @@ import javassist.CtMethod;
  *
  */
 public class TracingClassFileTransformer implements ClassFileTransformer {
-    
+
     private final Pattern pattern;
-    
+
+    // Only keep hash code to still allow user's JVM to unload class loaders
+    private HashSet<Integer> seenClassLoaders; // TODO: use unboxed ints
+
     public TracingClassFileTransformer(String pattern) {
         this.pattern = Pattern.compile(pattern);
+        this.seenClassLoaders = new HashSet<>();
     }
 
     @Override
@@ -36,7 +42,12 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
                 ByteArrayInputStream is = new ByteArrayInputStream(classfileBuffer);
                 CtClass ctClass = null;
                 try {
-                    ctClass = ClassPool.getDefault().makeClass(is);                               
+                    ClassPool classPool = ClassPool.getDefault();
+                    if(!seenClassLoaders.contains(loader.hashCode())) {
+                        classPool.appendClassPath(new LoaderClassPath(loader));
+                        seenClassLoaders.add(loader.hashCode());
+                    }
+                    ctClass = classPool.makeClass(is);
                 } finally {
                     is.close();
                 }
