@@ -25,7 +25,7 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
     private HashSet<Integer> seenClassLoaders; // TODO: use unboxed ints
 
     public TracingClassFileTransformer(String pattern) {
-        this.pattern = Pattern.compile(pattern);
+        this.pattern = pattern == null ? null : Pattern.compile(pattern);
         this.seenClassLoaders = new HashSet<>();
     }
 
@@ -72,7 +72,7 @@ public class TracingClassFileTransformer implements ClassFileTransformer {
     }
 
     private boolean shouldInstrument(String className) {
-        return pattern.matcher(className).matches();
+        return pattern == null ? true : pattern.matcher(className).matches();
     }
 
 }
