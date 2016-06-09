@@ -28,7 +28,7 @@ transform: regular expression to match against the full class name in order to i
 
 ## Text based API
 
-Berta listens to a port specified (8800 by default) and uses a very simple text based API to report its results. Upon connection it sends a textual greeting `Welcome to Berta!`
+Berta listens to a port specified (8800 by default) and uses a very simple text (UTF-8) based API to report its results. Upon connection it sends a textual greeting `Welcome to Berta!`
 
 Commands:
 
