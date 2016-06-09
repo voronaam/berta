@@ -1,5 +1,6 @@
 package ca.vorona.berta.api;
 
+import ca.vorona.berta.Agent;
 import ca.vorona.berta.StaticLinker;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +30,10 @@ public class AgentApiHandler extends ChannelHandlerAdapter {
             case "BMAGIC":
                 // A command to verify that we are still functional here
                 response = "Magic is here!\n";
+                break;
+            case "BARGUMENTS":
+                // A command to query what is being monitored and how
+                response = Agent.arguments + '\n';
                 break;
             default:
                 // Anything else must be the test name 

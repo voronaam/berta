@@ -10,6 +10,20 @@ The tool is aimed to help complex and loosely coupled systems, for which IDE fai
 Sample usage:
 
 ```bash
-java -javaagent:path/to/berta.jar=com.example.company.* <other arguments> MainClass
+java -javaagent:path/to/berta.jar=port=8801:handle=seen:transform=com.example.company.* <other arguments> MainClass
 ```
+
+All parameters optional.
+
+port: port to listen to for the text based API (default 8800)
+
+handle: select the handler for the analyzed methods.
+
+- print: simply prints out a line to stdout every time it encounters an instrumented method
+
+- seen: keeps track of methods seen in the current test (default)
+
+transform: regular expression to match against the full class name in order to instrument it. If omitted, all classes are instrumented. Normal java regular expressions are supported, including
+`com.company.package.*|com.company.other.package.*|.*Test` though you may need to escape some symbols for bash (or another shell) to pass a complex regexp.
+
 
