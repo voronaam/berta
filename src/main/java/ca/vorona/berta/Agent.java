@@ -17,7 +17,7 @@ public class Agent {
         arguments = agentArgs;
         int port = extractPort(agentArgs);
         // Initialize the reporting system
-        switch(extractParameter("handle", agentArgs, null)) {
+        switch(extractParameter("handle", agentArgs, "seen")) {
         case "print":
             StaticLinker.registerHandler(new PrintHandler());
             break;
